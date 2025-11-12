@@ -9,22 +9,13 @@ def qbi_test():
 
     print("使用者輸入內容：", user_input)
 
-    # === 這裡可以放你要查資料的邏輯 ===
-    # 例如模擬查詢結果
-    if "費用" in user_input:
-        result = "查到一筆報銷資料，狀態：審核中。"
-    elif "進度" in user_input:
-        result = "目前進度為：會計審核中。"
-    else:
-        result = "目前沒有相關報銷資料。"
-
     # === 回傳給 Qbi 的內容 ===
     return jsonify({
         "isContinuum": 0,
         "messageType": "Text",
         "message": {
             "type": "Text",
-            "text": [f"Qbi幫你查到：{result}"]
+            "text": [f"成功了"]
         },
         "getData": True
     })
