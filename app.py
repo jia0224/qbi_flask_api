@@ -10,13 +10,8 @@ def qbi_test():
     print("Qbi 傳來的內容：", user_input)
 
     return jsonify({
-        "isContinuum": 0,
-        "messageType": "Text",
-        "message": {
-            "type": "Text",
-            "text": [f"我收到你的訊息：{user_input}"]
-        },
-        "getData": True
+        "text": [f"我收到你的內容：{user_input}"],
+        "type": "Text"
     })
 
 if __name__ == "__main__":
