@@ -11,14 +11,15 @@ def qbi_test():
 
     # === 回傳給 Qbi 的內容 ===
     return jsonify({
-        "isContinuum": 0,
-        "messageType": "Text",
-        "message": {
-            "type": "Text",
-            "text": [f"成功了"]
-        },
-        "getData": True
+    "isContinuum": 0,
+    "messageType": "Text",
+    "message": {
+        "type": "Text",
+        "text": [f"我已成功接到：{user_input}"]
+    },
+    "getData": True
     })
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
