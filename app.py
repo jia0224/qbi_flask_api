@@ -9,11 +9,6 @@ def qbi_test():
     user_input = data.get("ask_input", "")
     print("Qbi 傳來的內容：", user_input)
 
-    return jsonify({
-        "text": [f"我收到你的內容：{user_input}"],
-        "type": "Text"
-    })
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
