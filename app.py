@@ -1,31 +1,33 @@
-# 這是一個最簡單的 Python 程式，可以接收 Qbi 傳來的文字
 from flask import Flask, request, jsonify
 
-# 建立一個小網站伺服器
 app = Flask(__name__)
 
-# 當 Qbi 傳資料到這個網址時，我們要接住它
 @app.route("/api/qbi/test", methods=["POST"])
 def qbi_test():
-    # 從 Qbi 收到的資料（是一個 JSON）
-    data = request.get_json(force=True)
+    data = request.get_json(force=True, silent=True) or {}
+    user_input = data.get("ask_input", "")
 
-    # 把使用者說的話拿出來（Qbi 會放在 ask_input）
-    user_input = data.get("ask_input", "(沒有收到資料)")
+    print("使用者輸入內容：", user_input)
 
-    print("Qbi 傳來的內容：", user_input)
+    # === 這裡可以放你要查資料的邏輯 ===
+    # 例如模擬查詢結果
+    if "費用" in user_input:
+        result = "查到一筆報銷資料，狀態：審核中。"
+    elif "進度" in user_input:
+        result = "目前進度為：會計審核中。"
+    else:
+        result = "目前沒有相關報銷資料。"
 
-    # 回傳一個簡單的回覆給 Qbi
+    # === 回傳給 Qbi 的內容 ===
     return jsonify({
         "isContinuum": 0,
         "messageType": "Text",
         "message": {
             "type": "Text",
-            "text": [f"我收到你的話了：{user_input}"]
+            "text": [f"Qbi幫你查到：{result}"]
         },
         "getData": True
     })
 
-# 讓程式跑起來
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
