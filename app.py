@@ -11,7 +11,7 @@ def qbi_test():
     print("Qbi 傳來的內容：", user_input)
 
     return jsonify({
-        "text": [f"我收到你的內容：{user_input}"],
+        "text": [f"收到你的訊息了~"],
         "type": "Text"
     })
 
