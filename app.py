@@ -37,20 +37,20 @@ def qbi_test():
         intro_text = "📌 以下是您的 ECP 報銷紀錄："
 
         # 4. 回傳成功 JSON
+        # 修正重點：根據文件 P.17，Multiple 格式的陣列欄位名稱應為 "ans"，而非 "items"
         return jsonify({
             "isContinuum": 0,
             "messageType": "Multiple",
             "message": {
                 "type": "Multiple",
-                "items": [
+                "version": "v770", # 補上版本號
+                "ans": [           # 修正：將 items 改為 ans
                     {
                         "type": "Text",
-                        # 如果你的前端支援 Array，這裡可以用 ["文字"]，但不支援的話建議用字串
                         "text": [intro_text] 
                     },
                     {
                         "type": "Text",
-                        # 這裡改成回傳單一字串，包含換行
                         "text": [final_table_text]
                     }
                 ]
@@ -61,7 +61,6 @@ def qbi_test():
     except Exception as e:
         # 5. 【關鍵】錯誤攔截
         # 如果程式崩潰，這裡會攔截到，並回傳一個「合法的 JSON 錯誤訊息」
-        # 這樣前端才不會因為收到 HTML 而報 SyntaxError
         error_msg = traceback.format_exc()
         print("發生錯誤:", error_msg)
         
@@ -72,7 +71,7 @@ def qbi_test():
                 "type": "Text",
                 "text": [f"系統發生內部錯誤，請聯繫管理員。\n錯誤原因: {str(e)}"]
             },
-            "getData": True # 即使錯誤也設為 True，避免機器人一直追問
+            "getData": True 
         })
 
 if __name__ == "__main__":
