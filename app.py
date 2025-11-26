@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import os
-import traceback # 引入 traceback 以便印出錯誤日誌
+import traceback
+import json  # 引入 json 用於日誌列印
 
 app = Flask(__name__)
 
@@ -22,45 +23,40 @@ def qbi_test():
         ]
 
         # 3. 格式化表格
-        # 建議：明確使用換行符號 \n 來連接每一行，確保前端能正確顯示換行
         header = "編號 | 名稱 | 狀態 | 申請人 | 金額"
         separator = "------------------------------------------------------------"
         
-        # 組合表格內容
         formatted_rows = [header, separator]
         for e in expenses:
             row = f"{e['id']} | {e['name']} | {e['status']} | {e['applicant']} | {e['amount']}"
             formatted_rows.append(row)
         
-        # 將陣列轉為單一字串 (安全性較高，避免前端不吃 Array)
         final_table_text = "\n".join(formatted_rows) 
         intro_text = "📌 以下是您的 ECP 報銷紀錄："
 
-        # 4. 回傳成功 JSON
-        # 修正重點：根據文件 P.17，Multiple 格式的陣列欄位名稱應為 "ans"，而非 "items"
-        return jsonify({
+        # 4. 回傳成功 JSON (降級策略：改用最穩定的 Text 格式)
+        # 根據文件 P.9，Text 類型的 text 欄位是一個字串陣列
+        # 我們可以把「介紹語」和「表格」分開放在陣列中，顯示效果類似
+        response_data = {
             "isContinuum": 0,
-            "messageType": "Multiple",
+            "messageType": "Text",  # 改回基礎 Text 類型，避免 Multiple 結構被擋
             "message": {
-                "type": "Multiple",
-                "version": "v770", # 補上版本號
-                "ans": [           # 修正：將 items 改為 ans
-                    {
-                        "type": "Text",
-                        "text": [intro_text] 
-                    },
-                    {
-                        "type": "Text",
-                        "text": [final_table_text]
-                    }
+                "type": "Text",
+                "version": "v770",
+                "text": [
+                    intro_text,
+                    final_table_text
                 ]
             },
             "getData": True
-        })
+        }
+
+        # [除錯用] 在伺服器端印出我們要回傳的 JSON，確保結構正確
+        print("Server Response:", json.dumps(response_data, ensure_ascii=False))
+
+        return jsonify(response_data)
 
     except Exception as e:
-        # 5. 【關鍵】錯誤攔截
-        # 如果程式崩潰，這裡會攔截到，並回傳一個「合法的 JSON 錯誤訊息」
         error_msg = traceback.format_exc()
         print("發生錯誤:", error_msg)
         
