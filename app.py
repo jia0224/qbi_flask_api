@@ -1,44 +1,40 @@
 from flask import Flask, request, jsonify
 import os
-import traceback
 import json
+import traceback
 
 app = Flask(__name__)
+
+# 讓中文能正確顯示，而不是顯示 unicode 編碼
 app.config['JSON_AS_ASCII'] = False
 
 @app.route("/", methods=["POST"])
 @app.route("/api/qbi/test", methods=["POST"])
 def qbi_test():
     try:
+
         data = request.get_json(silent=True) or {}
-        ask_input = data.get("ask_input") or ""
-        print(f"Qbi 傳來的內容: {ask_input}")
 
-        expenses = [
-            {"name": "財務部江昱壕人工購置費用", "status": "審核中", "amount": "900"},
-            {"name": "全速快遞費", "status": "已生效", "amount": "250"},
-            {"name": "AI專案-會議費", "status": "已生效", "amount": "3200"},
+        user_input = data.get("ask_input", "") or request.args.get("ask_input", "")
+        
+        print(f"Qbi 傳來的內容: {user_input}")
+
+        response_messages = [
+            "收到你的訊息了~",
+            f"你的訊息是: {user_input}"
         ]
-        
-        response_text_list = []
-        
-        response_text_list.append("📌 您的 ECP 報銷紀錄如下：")
-
-        for e in expenses:
-            line = f" {e['name']} | {e['status']} | ${e['amount']}"
-            response_text_list.append(line)
 
         response_data = {
             "isContinuum": 0,
-            "messageType": "Text",
+            "messageType": "Text",  
             "message": {
-                "type": "Text",
-                "text": response_text_list 
+                "type": "Text",     
+                "version": "v770",  
+                "text": response_messages  
             },
-            "getData": True
+            "getData": True  
         }
 
-        # 印出 Log 檢查
         print("Server Response:", json.dumps(response_data, ensure_ascii=False))
 
         return jsonify(response_data)
@@ -51,9 +47,9 @@ def qbi_test():
             "messageType": "Text",
             "message": {
                 "type": "Text",
-                "text": ["系統發生錯誤", str(e)]
+                "text": ["程式發生錯誤", str(e)]
             },
-            "getData": True 
+            "getData": True
         })
 
 if __name__ == "__main__":
