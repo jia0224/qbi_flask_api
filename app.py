@@ -20,18 +20,13 @@ def qbi_test():
 
         print(f"Qbi 傳來的內容: {user_input}")
 
-        # 不管使用者問什麼，都固定回這句
-        response_messages = [
-            "我是外部知識的文字"
-        ]
-
         response_data = {
             "isContinuum": 0,
             "messageType": "Text",
             "message": {
                 "type": "Text",
                 "version": "v770",
-                "text": response_messages
+                "text": "我是外部知識的文字"
             },
             "getData": True
         }
