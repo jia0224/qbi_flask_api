@@ -5,34 +5,35 @@ import traceback
 
 app = Flask(__name__)
 
-# 讓中文能正確顯示，而不是顯示 unicode 編碼
-app.config['JSON_AS_ASCII'] = False
+# 讓中文正常顯示
+app.config["JSON_AS_ASCII"] = False
+
 
 @app.route("/", methods=["POST"])
 @app.route("/api/qbi/test", methods=["POST"])
+@app.route("/getAnswer", methods=["POST"])   # 外部知識點要填這個網址
 def qbi_test():
     try:
-
         data = request.get_json(silent=True) or {}
 
         user_input = data.get("ask_input", "") or request.args.get("ask_input", "")
-        
+
         print(f"Qbi 傳來的內容: {user_input}")
 
+        # 不管使用者問什麼，都固定回這句
         response_messages = [
-            "收到你的訊息了~",
-            f"你的訊息是: {user_input}"
+            "我是外部知識的文字"
         ]
 
         response_data = {
             "isContinuum": 0,
-            "messageType": "Text",  
+            "messageType": "Text",
             "message": {
-                "type": "Text",     
-                "version": "v770",  
-                "text": response_messages  
+                "type": "Text",
+                "version": "v770",
+                "text": response_messages
             },
-            "getData": True  
+            "getData": True
         }
 
         print("Server Response:", json.dumps(response_data, ensure_ascii=False))
@@ -42,15 +43,18 @@ def qbi_test():
     except Exception as e:
         error_msg = traceback.format_exc()
         print("發生錯誤:", error_msg)
+
         return jsonify({
             "isContinuum": 0,
             "messageType": "Text",
             "message": {
                 "type": "Text",
+                "version": "v770",
                 "text": ["程式發生錯誤", str(e)]
             },
             "getData": True
         })
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
