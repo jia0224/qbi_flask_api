@@ -11,15 +11,20 @@ app.config["JSON_AS_ASCII"] = False
 
 @app.route("/", methods=["POST"])
 @app.route("/api/qbi/test", methods=["POST"])
-@app.route("/getAnswer", methods=["POST"])   # 外部知識點要填這個網址
+@app.route("/getAnswer", methods=["POST"])
 def qbi_test():
     try:
+        # QBI 有時用 JSON、有時用網址參數傳資料，兩種都接
         data = request.get_json(silent=True) or {}
 
-        user_input = data.get("ask_input", "") or request.args.get("ask_input", "")
+        user_input = (
+            data.get("ask_input", "")
+            or request.args.get("ask_input", "")
+        )
 
         print(f"Qbi 傳來的內容: {user_input}")
 
+        # 固定回覆文字
         response_data = {
             "isContinuum": 0,
             "messageType": "Text",
@@ -31,13 +36,15 @@ def qbi_test():
             "getData": True
         }
 
-        print("Server Response:", json.dumps(response_data, ensure_ascii=False))
+        print(
+            "Server Response:",
+            json.dumps(response_data, ensure_ascii=False)
+        )
 
         return jsonify(response_data)
 
     except Exception as e:
-        error_msg = traceback.format_exc()
-        print("發生錯誤:", error_msg)
+        print("發生錯誤:", traceback.format_exc())
 
         return jsonify({
             "isContinuum": 0,
@@ -45,7 +52,7 @@ def qbi_test():
             "message": {
                 "type": "Text",
                 "version": "v770",
-                "text": ["程式發生錯誤", str(e)]
+                "text": "程式發生錯誤"
             },
             "getData": True
         })
